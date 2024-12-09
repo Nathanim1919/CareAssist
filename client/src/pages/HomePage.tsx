@@ -1,10 +1,13 @@
 import React from 'react';
+import NavBar from '../components/NavBar';
+import ChatPage from './ChatPage';
 
 
 const HomePage: React.FC = () => {
   return (
-    <div>
-      <h1>Home Page</h1>
+    <div className='w-[80%] mx-auto'>
+      <NavBar />
+      <ChatPage />
     </div>
   );
 };
