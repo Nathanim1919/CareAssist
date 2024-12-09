@@ -1,13 +1,53 @@
+import { useContext } from "react";
 import Chats from "../components/Chats";
 import Conversations from "../components/Conversations";
+import { ChatProvider } from "../context/ChatContext";
+import { ChatContext } from "../context/ChatContext";
 
 const ChatPage: React.FC = () => {
-    return (
-        <div className="m-4 shadow-lg  bg-white grid grid-cols-[_.3fr_.7fr]">
-            <Conversations/>
-            <Chats/>
-        </div>
-    )
-}
+  const chatContext = useContext(ChatContext);
 
-export default ChatPage;
+  if (!chatContext) {
+    throw new Error("ChatPage must be used within a ChatProvider");
+  }
+
+  const { showConversations, expandShrinkConversations } = chatContext;
+
+  return (
+    <div
+      className={`shadow-lg flex transition-all duration-300 overflow-hidden
+        h-full rounded-xl`}
+    >
+      <div
+        className={`transition-width duration-300 ${
+          showConversations ? "w-[30%]" : "w-0"
+        }`}
+      >
+        <Conversations
+          showConversations={showConversations}
+          expandShrinkConversations={expandShrinkConversations}
+        />
+      </div>
+
+      {/* Chats Panel */}
+      <div
+        className={`transition-width duration-300 overflow-hidden flex-1 ${
+          showConversations ? "w-[60%]" : "w-full"
+        }`}
+      >
+        <Chats
+          showConversations={showConversations}
+          expandShrinkConversations={expandShrinkConversations}
+        />
+      </div>
+    </div>
+  );
+};
+
+const ChatPageWithProvider: React.FC = () => (
+  <ChatProvider>
+    <ChatPage />
+  </ChatProvider>
+);
+
+export default ChatPageWithProvider;

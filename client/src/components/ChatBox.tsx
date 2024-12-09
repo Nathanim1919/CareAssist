@@ -1,12 +1,12 @@
 const Chatbox: React.FC = () => {
   return (
-    <form className="bg-red-500 flex items-center absolute bottom-0 left-0 w-full p-2">
+    <form className="bg-gray-950 rounded-full overflow-hidden grid grid-cols-[_.9fr_.1fr] items-center absolute bottom-2  left-0 w-[98%] mx-auto">
         <input
             type="text"
             placeholder="Type a message"
-            className=" bg-gray-200 p-4 w-full rounded-full"
+            className="p-3 w-full bg-transparent text-white"
         />
-        <button type="submit" className="flex-1 w-full bg-gray-900 text-white">Send</button>
+        <button type="submit" className="p-2 flex-1 w-full text-white">Send</button>
     </form>
   );
 };

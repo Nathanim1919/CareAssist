@@ -2,7 +2,7 @@ import React from "react";
 
 const Nabar: React.FC = () => {
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex w-[80%] mx-auto py-2 justify-between items-center">
       <div className="logo">
         <h1>Care-Assist</h1>
       </div>

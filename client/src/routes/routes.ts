@@ -1,10 +1,10 @@
 import { createRootRoute, createRoute, Router } from "@tanstack/react-router";
 import Root from "./__root";
-import Chats from "../components/Chats";
 import ProfilePage from "../pages/ProfilePage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import App from "../App";
+import ChatPageWithProvider from "../pages/ChatPage";
 
 // Define the root route
 const rootRoute = createRootRoute({
@@ -20,7 +20,7 @@ const appRoute = createRoute({
 const chatRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/chats",
-  component: Chats,
+  component: ChatPageWithProvider,
 });
 
 const profileRoute = createRoute({
