@@ -1,6 +1,8 @@
 import { IoCreateOutline } from "react-icons/io5";
 import Chatbox from "./ChatBox";
 import { TbLayoutSidebarLeftExpand } from "react-icons/tb";
+import { useState } from "react";
+import EmptyPage from "./emptyPage";
 
 interface IChatProps {
   expandShrinkConversations: (value: boolean) => void;
@@ -84,6 +86,7 @@ const Chats: React.FC<IChatProps> = ({
     },
     
   ];
+  const [isEmpty, setIsEmpty] = useState(true);
   return (
     <div
       className={`h-[90vh] overflow-hidden p-4 relative bg-gray-900
@@ -103,8 +106,11 @@ const Chats: React.FC<IChatProps> = ({
         )}
       </div>
       <div className="chats w-full h-[80vh] overflow-y-auto p-4 pb-10">
-        {chats.map((chat, index) => (
-          <div key={index} className={chat.user ? "user" : "ai"}>
+        {isEmpty ? (
+          <EmptyPage />
+        ) : (
+          chats.map((chat: { user?: string; message?: string; ai?: string }, index: number) => (
+            <div key={index} className={chat.user ? "user" : "ai"}>
             <div className="message flex flex-col">
               {chat.user ? (
                 <p
@@ -124,9 +130,9 @@ const Chats: React.FC<IChatProps> = ({
               )}
             </div>
           </div>
-        ))}
+        )))}
       </div>
-      <Chatbox />
+     {!isEmpty && <Chatbox />}
     </div>
   );
 };
