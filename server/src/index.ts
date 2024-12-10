@@ -1,42 +1,38 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import authRouter from "./routes/auth.route";
+import chatRouter from "./routes/chat.route";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-const apiKey = "AIzaSyC_Q1Dv_cPfOdZ6IQqmpJk13DbnZ1LvxAc";
-const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-const patientInfo = {
-  symptoms: ["fever", "headache", "nausea"],
-  medicalHistory: ["diabetes", "hypertension"],
-  medications: ["Metformin", "Lisinopril"],
-};
+dotenv.config()
+const app = express();
 
-const preamble = `
-You are a virtual medical assistant trained to provide accurate and reliable advice based on patient symptoms and medical history. 
-Always recommend consulting a licensed medical professional.
-`;
+// connect to mongodb
+mongoose
+  .connect("mongodb://localhost:27017/chat-app")
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((error) => {
+    console.log("Error connecting to MongoDB", error);
+  });
 
-const prompt = `
-${preamble}
-Patient Symptoms: ${patientInfo.symptoms.join(", ")}
-Medical History: ${patientInfo.medicalHistory.join(", ")}
-Medications: ${patientInfo.medications.join(", ")}
-Question: What should the patient do next?
-Assistant:
-`;
+// routes
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
 
-async function generateContent() {
-  try {
-    const result = await model.generateContent(prompt);
+app.use("/auth", authRouter);
+app.use("/chat", chatRouter);
 
-    const candidates = result.response?.candidates || [];
-    const content = candidates
-      .map(candidate => candidate.content?.parts?.[0]?.text || "No content found")
-      .join("\n");
-
-    console.log("Generated Content:\n", content);
-  } catch (error) {
-    console.error("Error generating content:", error);
-  }
-}
-
-generateContent();
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});

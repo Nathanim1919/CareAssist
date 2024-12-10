@@ -15,7 +15,7 @@ const ChatPage: React.FC = () => {
 
   return (
     <div
-      className={`shadow-lg flex transition-all duration-300 overflow-hidden
+      className={`shadow-lg w-[80%] mx-auto flex transition-all duration-300 overflow-hidden
         h-full rounded-xl`}
     >
       <div

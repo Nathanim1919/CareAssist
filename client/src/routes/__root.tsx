@@ -1,10 +1,13 @@
 // src/routes/__root.tsx
-import { Outlet } from '@tanstack/react-router';
+import { Outlet } from "@tanstack/react-router";
+import { AuthProvider } from "../context/AuthContext";
 
 const Root = () => {
   return (
     <div>
-      <Outlet />
+      <AuthProvider>
+        <Outlet />
+      </AuthProvider>
     </div>
   );
 };

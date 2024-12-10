@@ -3,8 +3,8 @@ import Root from "./__root";
 import ProfilePage from "../pages/ProfilePage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
-import App from "../App";
-import ChatPageWithProvider from "../pages/ChatPage";
+import HomePage from "../pages/HomePage";
+import { HeroPage } from "../pages/HeroPage";
 
 // Define the root route
 const rootRoute = createRootRoute({
@@ -14,13 +14,13 @@ const rootRoute = createRootRoute({
 const appRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/',
-    component: App,
+    component: HeroPage,
   });
 
 const chatRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/chats",
-  component: ChatPageWithProvider,
+  component: HomePage,
 });
 
 const profileRoute = createRoute({

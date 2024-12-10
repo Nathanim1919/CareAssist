@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, ObjectId, Schema } from "mongoose";
 
 interface IMessage {
   content: string;
@@ -6,15 +6,20 @@ interface IMessage {
 }
 
 interface IConversation {
+  user: ObjectId;
   title: string;
   messages: IMessage[];
 }
 
 const ConversationSchema = new Schema<IConversation>(
   {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     title: {
       type: String,
-      required: true,
+      default: "",
     },
     messages: {
       type: [

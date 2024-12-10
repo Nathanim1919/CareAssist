@@ -5,7 +5,7 @@ import ChatPageWithProvider from './ChatPage';
 
 const HomePage: React.FC = () => {
   return (
-    <div className='w-[80%] h-100vh pb-8 overflow-hidden mx-auto text-white bg-gray-950'>
+    <div className='w-[100%] h-screen overflow-hidden mx-auto text-white bg-gray-950'>
       <Nabar/>
       <ChatPageWithProvider />
     </div>

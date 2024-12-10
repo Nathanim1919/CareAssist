@@ -1,10 +1,13 @@
 import mongoose, { Schema } from "mongoose";
+// compare the user password
+import bcrypt from "bcrypt";
 
-interface IUser {
+interface IUser extends mongoose.Document {
   fullName: string;
   email: string;
   password: string;
   role: IUserRole;
+  comparePassword: (password: string) => boolean;
 }
 
 type IUserRole = "doctor" | "nurse" | "patient";
@@ -16,10 +19,18 @@ const UserSchema = new Schema<IUser>({
   role: { type: String, enum: ["doctor", "nurse", "patient"], required: true },
 });
 
-// compare the user password
+
+UserSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
 UserSchema.methods.comparePassword = async function (password: string) {
-  return password === this.password;
-}
+  return await bcrypt.compare(password, this.password);
+};
+
 const User = mongoose.model<IUser>("User", UserSchema);
 
 

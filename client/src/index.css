@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Apply custom scrollbar styles globally */
+
+body{
+    background-color: #191a1b;
+  }
+  * {
+      scrollbar-width: thin; /* For Firefox */
+      scrollbar-color: transparent transparent; /* Thumb and track colors */
+    }
+    
+    /* WebKit-based browsers */
+    *::-webkit-scrollbar {
+      width: 0px;
+      height: 0px;
+    }
+    
+    *::-webkit-scrollbar-track {
+      background: transparent; /* Track color */
+    }
+    
+    *::-webkit-scrollbar-thumb {
+      background: #111112; /* Thumb color */
+      border-radius: 110px;
+    }
+    
+    *::-webkit-scrollbar-thumb:hover {
+      background: #191a1b; /* Thumb color on hover */
+    }

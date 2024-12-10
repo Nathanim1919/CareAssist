@@ -1,11 +1,11 @@
 import './App.css'
-import HomePage from './pages/HomePage'
+import { HeroPage } from './pages/HeroPage'
 
 function App() {
 
   return (
     <div className='bg-gray-950 h-screen overflow-hidden'>
-     <HomePage />
+     <HeroPage />
     </div>
   )
 }
