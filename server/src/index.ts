@@ -11,7 +11,8 @@ const patientInfo = {
 };
 
 const preamble = `
-You are a virtual medical assistant trained to provide accurate and reliable advice based on patient symptoms and medical history. Always recommend consulting a licensed medical professional.
+You are a virtual medical assistant trained to provide accurate and reliable advice based on patient symptoms and medical history. 
+Always recommend consulting a licensed medical professional.
 `;
 
 const prompt = `
