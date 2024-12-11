@@ -1,4 +1,4 @@
-import { Error } from "mongoose";
+import mongoose, { Error } from "mongoose";
 import { ConversationModel } from "../model/conversation.model";
 import { generateContent, generateTitleForConversation } from "./llmService";
 
@@ -14,7 +14,24 @@ export const createConversation = async (userId: string) => {
   }
 };
 
-export const getMessages = async (conversationId: string) => {
+
+export const getAllConversations = async (userId: string) => {
+  console.log("userId", userId);
+  try {
+    const user_id = new mongoose.Types.ObjectId(userId);
+    const conversations = await ConversationModel.find({
+      user: user_id
+    })
+    return conversations;
+  } catch (error) {
+    if (error instanceof Error){
+      throw new Error(error.message)
+    }
+    throw new Error("Unknown Error has been occured while fetching all user conversations");
+  }
+}
+
+export const getMessagesService = async (conversationId: string) => {
   if (!conversationId) {
     return null;
   }
@@ -42,8 +59,9 @@ export const createMessage = async (
   try {
     // Find the conversation by ID or create a new one
     const conversation = conversationId
-      ? await ConversationModel.findById(conversationId)
+      ? await ConversationModel.findById(new mongoose.Types.ObjectId(conversationId))
       : await createConversation(userId);
+      console.log("conversation id is", conversationId);
 
     // Create a new message
     conversation?.messages.push({ content: message, role: "user" });

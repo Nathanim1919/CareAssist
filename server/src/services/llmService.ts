@@ -1,5 +1,5 @@
 import { GenerateContentResult } from "@google/generative-ai";
-import { getMessages } from "./chat.service";
+import { getMessagesService } from "./chat.service";
 import { model, preamble } from "./runLLm";
 import { User } from "../model/user.model";
 
@@ -8,7 +8,7 @@ export async function generateContent(userId: string, userMessage: string, conve
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
-    const history = await getMessages(conversationId || "");
+    const history = await getMessagesService(conversationId || "");
     const messages = history ? truncateMessages(history.messages.map(msg => msg.content), 3000) : [];
     const prompt = generatePrompt(preamble, messages, user.role, user.fullName, userMessage);
     console.log("prompt: ", prompt);
@@ -28,7 +28,7 @@ export async function generateContent(userId: string, userMessage: string, conve
 
 export async function generateTitleForConversation(conversationId: string) {
   try {
-    const history = await getMessages(conversationId);
+    const history = await getMessagesService(conversationId);
     if (!history) throw new Error("Conversation not found");
 
     const messages = truncateMessages(history.messages.map(msg => msg.content), 500); // Shorter context for titles

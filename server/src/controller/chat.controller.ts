@@ -1,23 +1,11 @@
 import { Request, Response } from "express";
-import { createMessage, getMessages } from "../services/chat.service";
+import { createMessage, getMessagesService, getAllConversations } from "../services/chat.service";
 
 
 export const getAllConversation = async (req: Request, res: Response) => {
     try {
-        const userId  = req.useId;
-        const res = await getAllConversations(userId);
-        res.status(200).json({ message: "All conversations" });
-    } catch (error) {
-        if (error instanceof Error) {
-            res.status(400).json({ message: error.message });
-        }
-    }
-};
-
-export const newMessage = async (req: Request, res: Response) => {
-    try {
-        const { userId, message, conversationId } = req.body;
-        const response = await createMessage(userId, message, conversationId);
+        const userId  = req.user??"";
+        const response = await getAllConversations(userId);
         res.status(200).json(response);
     } catch (error) {
         if (error instanceof Error) {
@@ -26,10 +14,24 @@ export const newMessage = async (req: Request, res: Response) => {
     }
 };
 
-export const getAllMessages = async (req: Request, res: Response) => {
+export const newMessage = async (req: Request, res: Response) => {
+    console.log(req.body);
+    try {
+        const userId = req.user??"";
+        const {message, activeConversation } = req.body;
+        const response = await createMessage(userId, message, activeConversation);
+        res.status(200).json(response);
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(400).json({ message: error.message });
+        }
+    }
+};
+
+export const getMessages = async (req: Request, res: Response) => {
     try {
         const { conversationId } = req.params;
-        const response = await getMessages(conversationId);
+        const response = await getMessagesService(conversationId);
         res.status(200).json(response);
     } catch (error) {
         if (error instanceof Error) {

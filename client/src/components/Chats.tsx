@@ -1,8 +1,10 @@
 import { IoCreateOutline } from "react-icons/io5";
 import Chatbox from "./ChatBox";
 import { TbLayoutSidebarLeftExpand } from "react-icons/tb";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import EmptyPage from "./emptyPage";
+import { ChatContext } from "../context/ChatContext";
+import ReactMarkdown from "react-markdown";
 
 interface IChatProps {
   expandShrinkConversations: (value: boolean) => void;
@@ -51,7 +53,8 @@ const Chats: React.FC<IChatProps> = ({
     },
     {
       user: "Nathan",
-      message: "Thank you for your help, so I will take some rest and drink plenty of fluids and take some paracetamol for the fever and ibuprofen for the headache.",
+      message:
+        "Thank you for your help, so I will take some rest and drink plenty of fluids and take some paracetamol for the fever and ibuprofen for the headache.",
     },
     {
       ai: "That's correct. If you have any other questions, feel free to ask.",
@@ -84,9 +87,10 @@ const Chats: React.FC<IChatProps> = ({
     {
       ai: "You're welcome.",
     },
-    
   ];
-  const [isEmpty, setIsEmpty] = useState(true);
+  const chat = useContext(ChatContext);
+  const { messages, setEmpty, empty, activeConversation } = chat!;
+
   return (
     <div
       className={`h-[90vh] overflow-hidden p-4 relative bg-gray-900
@@ -96,7 +100,8 @@ const Chats: React.FC<IChatProps> = ({
       <div className="header">
         {!showConversations && (
           <div className="icons p-4 flex items-center text-2xl  gap-5">
-            <TbLayoutSidebarLeftExpand className="cursor-pointer"
+            <TbLayoutSidebarLeftExpand
+              className="cursor-pointer"
               onClick={() => {
                 expandShrinkConversations(!showConversations);
               }}
@@ -106,33 +111,33 @@ const Chats: React.FC<IChatProps> = ({
         )}
       </div>
       <div className="chats w-full h-[80vh] overflow-y-auto p-4 pb-10">
-        {isEmpty ? (
+        {empty && !activeConversation ? (
           <EmptyPage />
         ) : (
-          chats.map((chat: { user?: string; message?: string; ai?: string }, index: number) => (
-            <div key={index} className={chat.user ? "user" : "ai"}>
-            <div className="message flex flex-col">
-              {chat.user ? (
-                <p
-                  className="
- text-gray-200 font-semibold bg-gray-800 md:max-w-[50%] p-2 px-6 rounded-full self-start text-[12px]"
-                >
-                  {chat.message}
-                </p>
-              ) : (
-                <p
-                  className="md:max-w-[50%] p-2 px-6 rounded-full text-[12px]
-                            self-end bg-gray-950 text-white
-                            "
-                >
-                  {chat.ai}
-                </p>
-              )}
+          messages.map((chat, index: number) => (
+            <div key={index} className="">
+              <div className="message flex flex-col gap-4 p-1">
+                {chat.role === "user" ? (
+                  <div  className="text-gray-200 font-semibold bg-gray-800 md:max-w-[70%] p-2 px-6 rounded-full self-start text-[15px]">
+                    <p>
+                      <ReactMarkdown>{chat.content}</ReactMarkdown>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="md:max-w-[70%] overflow-auto p-2 px-6 rounded-3xl text-[15px]
+                  self-end bg-gray-950 text-white
+                  ">
+                    <p>
+                    <ReactMarkdown>{chat.content}</ReactMarkdown>
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )))}
+          ))
+        )}
       </div>
-     {!isEmpty && <Chatbox />}
+      {activeConversation && <Chatbox />}
     </div>
   );
 };
