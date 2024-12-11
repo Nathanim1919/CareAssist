@@ -1,7 +1,7 @@
 import { IoCreateOutline } from "react-icons/io5";
 import Chatbox from "./ChatBox";
 import { TbLayoutSidebarLeftExpand } from "react-icons/tb";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import EmptyPage from "./emptyPage";
 import { ChatContext } from "../context/ChatContext";
 import ReactMarkdown from "react-markdown";
@@ -16,84 +16,35 @@ const Chats: React.FC<IChatProps> = ({
   expandShrinkConversations,
   showConversations,
 }) => {
-  const chats = [
-    {
-      user: "Nathan",
-      message: "Hello",
-    },
-    {
-      ai: "How can I help you today?",
-    },
-    {
-      user: "Nathan",
-      message: "I am not feeling well",
-    },
-    {
-      ai: "I am sorry to hear that. Can you tell me more about your symptoms?",
-    },
-    {
-      user: "Nathan",
-      message: "I have a headache",
-    },
-    {
-      ai: "I see. Do you have any other symptoms?",
-    },
-    {
-      user: "Nathan",
-      message: "I also have a fever",
-    },
-    {
-      ai: "I recommend you take some rest and drink plenty of fluids. If your symptoms persist, please consult a doctor immediately.",
-    },
-    {
-      user: "Nathan",
-      message: "Thank you, what about the medication?",
-    },
-    {
-      ai: "I recommend you take some paracetamol for the fever. You can also take some ibuprofen for the headache. Make sure to follow the recommended dosage on the packaging.",
-    },
-    {
-      user: "Nathan",
-      message:
-        "Thank you for your help, so I will take some rest and drink plenty of fluids and take some paracetamol for the fever and ibuprofen for the headache.",
-    },
-    {
-      ai: "That's correct. If you have any other questions, feel free to ask.",
-    },
-    {
-      user: "Nathan",
-      message: "Thank you, goodbye.",
-    },
-    {
-      ai: "Goodbye.",
-    },
-    {
-      user: "Nathan",
-      message: "Sorry, one more question.",
-    },
-    {
-      ai: "Sure, what is your question?",
-    },
-    {
-      user: "Nathan",
-      message: "How do I book an appointment?",
-    },
-    {
-      ai: "You can book an appointment by clicking on the 'Appointment' button on the left sidebar. You can select the date and time that works best for you.",
-    },
-    {
-      user: "Nathan",
-      message: "Thank you.",
-    },
-    {
-      ai: "You're welcome.",
-    },
-  ];
   const chat = useContext(ChatContext);
-  const { messages, empty, activeConversation } = chat!;
-  const {socket, connected} = useSocket();
+  const { messages, empty, activeConversation, setActiveConversation } = chat!;
+  const { socket } = useSocket();
+  const [aiThinking, setAiThinking] = useState<boolean>(false);
 
-  console.log("Socket connected", connected);
+  useEffect(() => {
+    socket?.on("aiIsTyping", () => {
+      setAiThinking(true);
+    });
+
+    socket?.on("aiResponse", (data: any) => {
+      messages.push(data);
+      setAiThinking(false);
+    });
+
+    socket?.on("title", (data: any) => {
+      console.log(data);
+      setActiveConversation({
+        ...activeConversation!,
+        title: data,
+      });
+    });
+
+    return () => {
+      socket?.off("aiIsTyping");
+      socket?.off("aiResponse");
+      socket?.off("title");
+    };
+  }, [activeConversation, messages, setActiveConversation, socket]);
 
   return (
     <div
@@ -110,11 +61,11 @@ const Chats: React.FC<IChatProps> = ({
                 expandShrinkConversations(!showConversations);
               }}
             />
-            <IoCreateOutline />
+            <IoCreateOutline onClick={() => setActiveConversation(null)} />
           </div>
         )}
       </div>
-      <div className="chats w-full h-[80vh] overflow-y-auto p-4 pb-10">
+      <div className="chats w-full h-[75vh] overflow-y-auto p-4 pb-10">
         {empty && !activeConversation ? (
           <EmptyPage />
         ) : (
@@ -122,23 +73,33 @@ const Chats: React.FC<IChatProps> = ({
             <div key={index} className="">
               <div className="message flex flex-col gap-4 p-1">
                 {chat.role === "user" ? (
-                  <div  className="text-gray-200 font-semibold bg-gray-800 md:max-w-[70%] p-2 px-6 rounded-full self-start text-[15px]">
-                  
-                      <ReactMarkdown>{chat.content}</ReactMarkdown>
-                  
+                  <div className="text-gray-200 font-semibold bg-gray-800 md:max-w-[70%] p-2 px-6 rounded-full self-start text-[15px]">
+                    <ReactMarkdown>{chat.content}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="md:max-w-[70%] overflow-auto p-2 px-6 rounded-3xl text-[15px]
+                  <div
+                    className="md:max-w-[70%] overflow-auto p-2 px-6 rounded-3xl text-[15px]
                   self-end bg-gray-950 text-white
-                  ">
-                   
+                  "
+                  >
                     <ReactMarkdown>{chat.content}</ReactMarkdown>
-                   
                   </div>
                 )}
               </div>
             </div>
           ))
+        )}
+
+        {aiThinking && (
+          <div className="message flex flex-col gap-4 p-1">
+            <div
+              className="md:max-w-[70%] overflow-auto p-2 px-6 rounded-3xl text-[15px]
+              self-end bg-gray-950 text-white
+            "
+            >
+              <p>AI is thinking...</p>
+            </div>
+          </div>
         )}
       </div>
       {activeConversation && <Chatbox />}

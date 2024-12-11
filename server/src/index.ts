@@ -17,7 +17,10 @@ const app = express();
 export const httpServer = http.createServer(app);
 
 // create socket server
-const socketInstance = initSocketServer(httpServer);
+export const {
+  io,
+  userSockets,
+} = initSocketServer(httpServer);
 
 
 

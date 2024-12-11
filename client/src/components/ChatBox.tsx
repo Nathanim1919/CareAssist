@@ -8,12 +8,8 @@ const Chatbox: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const target = e.target as typeof e.target & {
-      message: { value: string };
-    };
-    sendMessage(message, activeConversation??undefined);
-    console.log("active-conversation is: ",activeConversation)
-    target.message.value = "";
+    sendMessage(message, activeConversation?._id??undefined);
+    setMessage("");
   };
 
   return (
@@ -23,6 +19,7 @@ const Chatbox: React.FC = () => {
             placeholder="Type a message"
             className="p-3 w-full bg-transparent text-white"
             onChange={(e) => setMessage(e.target.value)}
+            value={message}
         />
         <button type="submit" className="p-2 flex-1 w-full text-white">Send</button>
     </form>

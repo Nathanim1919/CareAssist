@@ -15,12 +15,12 @@ const ChatPage: React.FC = () => {
 
   return (
     <div
-      className={`shadow-lg w-[80%] mx-auto flex transition-all duration-300 overflow-hidden
+      className={`shadow-lg relative  w-[95%] md:w-[70%] mx-auto flex transition-all duration-300 overflow-hidden
         h-full rounded-xl`}
     >
       <div
         className={`transition-width duration-300 ${
-          showConversations ? "w-[30%]" : "w-0"
+          showConversations ? "w-[90%] md:w-[30%]" : "w-0"
         }`}
       >
         <Conversations

@@ -3,6 +3,8 @@ import { IoCreateOutline } from "react-icons/io5";
 import { SlOptions } from "react-icons/sl";
 import { ChatContext } from "../context/ChatContext";
 import { useContext, useEffect } from "react";
+import useSocket from "../hooks/useSocket";
+import { IConversation } from "../types/chat.type";
 
 interface IConversationProps {
   expandShrinkConversations: (value: boolean) => void;
@@ -13,98 +15,34 @@ const Conversations: React.FC<IConversationProps> = ({
   expandShrinkConversations,
   showConversations,
 }) => {
-  // const conversations = [
-  //   {
-  //     title: "How are you feeling today?",
-  //   },
-  //   {
-  //     title: "Health Checkup",
-  //   },
-  //   {
-  //     title: "Medication",
-  //   },
-  //   {
-  //     title: "Appointment",
-  //   },
-  //   {
-  //     title: "How are you feeling today?",
-  //   },
-  //   {
-  //     title: "Health Checkup",
-  //   },
-  //   {
-  //     title: "Medication",
-  //   },
-  //   {
-  //     title: "Appointment",
-  //   },
-  //   {
-  //     title: "How are you feeling today?",
-  //   },
-  //   {
-  //     title: "Health Checkup",
-  //   },
-  //   {
-  //     title: "Medication",
-  //   },
-  //   {
-  //     title: "Appointment",
-  //   },
-  //   {
-  //     title: "How are you feeling today?",
-  //   },
-  //   {
-  //     title: "Health Checkup",
-  //   },
-  //   {
-  //     title: "Medication",
-  //   },
-  //   {
-  //     title: "Appointment",
-  //   },
-  //   {
-  //     title: "How are you feeling today?",
-  //   },
-  //   {
-  //     title: "Health Checkup",
-  //   },
-  //   {
-  //     title: "Medication",
-  //   },
-  //   {
-  //     title: "Appointment",
-  //   },
-  //   {
-  //     title: "How are you feeling today?",
-  //   },
-  //   {
-  //     title: "Health Checkup",
-  //   },
-  //   {
-  //     title: "Medication",
-  //   },
-  //   {
-  //     title: "Appointment",
-  //   },
-  // ];
   const chat = useContext(ChatContext);
   const { getAllConversations, setEmpty, conversations,getActiveConversation, setActiveConversation, activeConversation } = chat!;
-
-  useEffect(() => {
-    getAllConversations();
-    console.log(conversations);
-  }, []);
+  const { socket } = useSocket();
 
 
-  const handleActiveConversation = (conversationId: string) => {
+  const handleActiveConversation = (conversationId: IConversation) => {
     setActiveConversation(conversationId);
-    getActiveConversation(conversationId);
+    getActiveConversation(conversationId._id);
   };
 
   const startNewConversation = () => {
     setEmpty(true);
     setActiveConversation("");
   }
+
+
+  useEffect(() => {
+    socket?.on("newConversation", (data: IConversation) => {
+      conversations.unshift(data); // Add new conversation to the top of the list
+      setActiveConversation(data);
+      getActiveConversation(data._id);
+    });
+    getAllConversations();
+
+    return () => {
+      socket?.off("newConversation");
+    };
+  }, [conversations, getActiveConversation, getAllConversations, setActiveConversation, socket]);
   
   return (
     <div
@@ -124,10 +62,10 @@ const Conversations: React.FC<IConversationProps> = ({
       <div className="overflow-auto">
         {conversations.map((conversation, index) => (
           <div
-            onClick={() => handleActiveConversation(conversation._id)}
+            onClick={() => handleActiveConversation(conversation)}
             key={index}
             className={`group conversation p-2 hover:bg-gray-800 rounded-lg cursor-pointer flex items-center justify-between
-              ${activeConversation === conversation._id ? "bg-gray-800" : ""}`}
+              ${activeConversation?._id === conversation._id ? "bg-gray-800" : ""}`}
           >
             <h3 className="text-[13px]">{conversation.title?conversation.title:"new chat"}</h3>
             <SlOptions className="hidden group-hover:block" />

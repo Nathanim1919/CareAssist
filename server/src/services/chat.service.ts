@@ -1,12 +1,16 @@
 import mongoose, { Error } from "mongoose";
 import { ConversationModel } from "../model/conversation.model";
 import { generateContent, generateTitleForConversation } from "./llmService";
-import socketInstance from "../socket";
+import { io } from "../index";
 
 export const createConversation = async (userId: string) => {
   try {
-    const conversation = await ConversationModel.create({user:userId, title:"", messages: [] });
-    // socketInstance?.emit("newConversation", conversation);
+    const conversation = await ConversationModel.create({
+      user: userId,
+      title: "new chat",
+      messages: [],
+    });
+    io.emit("newConversation", conversation);
     return conversation;
   } catch (error) {
     if (error instanceof Error) {
@@ -16,20 +20,21 @@ export const createConversation = async (userId: string) => {
   }
 };
 
-
 export const getAllConversations = async (userId: string) => {
   console.log("userId", userId);
   try {
     const user_id = new mongoose.Types.ObjectId(userId);
-    const conversations = await ConversationModel.find({user: user_id})
+    const conversations = await ConversationModel.find({ user: user_id });
     return conversations.reverse();
   } catch (error) {
-    if (error instanceof Error){
-      throw new Error(error.message)
+    if (error instanceof Error) {
+      throw new Error(error.message);
     }
-    throw new Error("Unknown Error has been occured while fetching all user conversations");
+    throw new Error(
+      "Unknown Error has been occured while fetching all user conversations"
+    );
   }
-}
+};
 
 export const getMessagesService = async (conversationId: string) => {
   if (!conversationId) {
@@ -49,35 +54,40 @@ export const getMessagesService = async (conversationId: string) => {
   }
 };
 
-
-
 export const createMessage = async (
   userId: string,
   message: string,
   conversationId?: string
 ) => {
   try {
+    io.emit("aiIsTyping", true);
     // Find the conversation by ID or create a new one
     const conversation = conversationId
-      ? await ConversationModel.findById(new mongoose.Types.ObjectId(conversationId))
+      ? await ConversationModel.findById(
+          new mongoose.Types.ObjectId(conversationId)
+        )
       : await createConversation(userId);
-      console.log("conversation id is", conversationId);
 
     // Create a new message
     conversation?.messages.push({ content: message, role: "user" });
     const aiResponse = await generateContent(userId, message, conversationId);
     conversation?.messages.push({ content: aiResponse, role: "ai" });
+    io.emit("aiResponse", {
+      content: aiResponse,
+      role: "ai",
+    });
     // generate title if title is empty
-    if (conversation && !conversation.title) {
+    if (conversation && conversation.title === "new chat") {
       if (conversation?.messages.length >= 3) {
         const title = await generateTitleForConversation(conversationId || "");
         conversation.title = title;
+        io.emit("title", title);
         console.log("Generated title:", title);
       } else {
         console.log("Not enough context for generating a title.");
       }
     }
-    
+
     await conversation?.save();
   } catch (error) {
     if (error instanceof Error) {

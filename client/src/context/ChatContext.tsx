@@ -10,8 +10,8 @@ interface ChatContextType {
   expandShrinkConversations: () => void;
   getAllConversations: () => void;
   sendMessage: (message: string, conversationId?: string) => void;
-  activeConversation: string | null;
-  setActiveConversation: (conversationId: string) => void;
+  activeConversation: IConversation | null;
+  setActiveConversation: (conversationId: IConversation | null) => void;
   empty: boolean;
   setEmpty: (empty: boolean) => void;
   getActiveConversation: (conversationId: string) => void;
@@ -26,7 +26,7 @@ const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [showConversations, setShowConversations] = useState<boolean>(true);
   const [conversations, setConversations] = useState<IConversation[]>([]);
-  const [activeConversation, setActiveConversation] = useState<string | null>(
+  const [activeConversation, setActiveConversation] = useState<IConversation | null>(
     null
   );
   const [isEmpty, setIsEmpty] = useState(true);
@@ -66,7 +66,7 @@ const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const response = await apiConfig.get(`/chat/${conversationId}`);
       setMessages(response.data.messages);
-      setActiveConversation(conversationId);
+      setActiveConversation(response.data);
       console.log(response);
     } catch (error) {
       console.error(error);
