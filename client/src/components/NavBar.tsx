@@ -3,7 +3,7 @@ import { authContext } from "../context/AuthContext";
 
 const Nabar: React.FC = () => {
   const auth = useContext(authContext);
-  const { userData } = auth!;
+  const { userData, logout } = auth!;
   return (
     <div className="flex w-[70%] mx-auto py-2 justify-between items-center">
       <div className="logo">
@@ -19,7 +19,7 @@ const Nabar: React.FC = () => {
             <h3>Profession <span className="text-gray-400">{userData?.role}</span></h3>
           </div>
           <div>
-            <button className="bg-red-800 text-white p-1 px-2 rounded-md">
+            <button onClick={logout} className="bg-red-800 text-white p-1 px-2 rounded-md">
               Logout
             </button>
           </div>

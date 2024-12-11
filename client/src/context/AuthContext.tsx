@@ -31,6 +31,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         navigate({ to: "/chats" });
       } catch (error) {
         console.error("Error fetching user data:", error);
+        navigate({ to: "/login" });
       }
     };
 

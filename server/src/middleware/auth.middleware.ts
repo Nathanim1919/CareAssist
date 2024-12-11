@@ -12,37 +12,32 @@ export const authenticateUser = async (
     const { accessToken } = req.cookies;
 
     if (!accessToken) {
-      res.status(401).json({
-        message: "unAuthorized",
-      });
-    }
-
-    const decode = decodeToken(accessToken);
-    const email = (decode as JwtPayload).email;
-
-    if (!email) {
-      res.status(401).json({
-        message: "unAuthorized",
-      });
+      res
+        .status(401)
+        .json({ message: "Unauthorized: No access token provided" });
       return;
     }
 
+    const decoded = decodeToken(accessToken);
+
+    if (typeof decoded === "string" || !(decoded as JwtPayload).email) {
+      res.status(401).json({ message: "Unauthorized: Invalid token format" });
+      return;
+    }
+
+    const email = (decoded as JwtPayload).email;
     const user = await User.findOne({ email });
 
     if (!user) {
-      res.status(401).json({
-        message: "unAuthorized",
-      });
+      res.status(401).json({ message: "Unauthorized: User not found" });
       return;
     }
 
-    req.user = user?._id as string;
-    console.log("User authenticated");
+    req.user = user._id as string;
     next();
   } catch (error) {
-    res.status(401).json({
-      message: "unAuthorized",
-    });
+    console.error("Authentication error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
     return;
   }
 };

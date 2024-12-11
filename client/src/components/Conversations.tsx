@@ -27,7 +27,7 @@ const Conversations: React.FC<IConversationProps> = ({
 
   const startNewConversation = () => {
     setEmpty(true);
-    setActiveConversation("");
+    setActiveConversation(null);
   }
 
 

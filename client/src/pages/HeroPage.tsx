@@ -51,7 +51,7 @@ export const HeroPage = () => {
                 </p>
                 <div className="flex justify-center gap-4">
                     <Link
-                        to="/chat"
+                        to="/chats"
                         className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-lg font-medium rounded-lg shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300"
                     >
                         Start Chatting
