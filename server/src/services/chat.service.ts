@@ -1,10 +1,12 @@
 import mongoose, { Error } from "mongoose";
 import { ConversationModel } from "../model/conversation.model";
 import { generateContent, generateTitleForConversation } from "./llmService";
+import socketInstance from "../socket";
 
 export const createConversation = async (userId: string) => {
   try {
     const conversation = await ConversationModel.create({user:userId, title:"", messages: [] });
+    // socketInstance?.emit("newConversation", conversation);
     return conversation;
   } catch (error) {
     if (error instanceof Error) {
@@ -19,10 +21,8 @@ export const getAllConversations = async (userId: string) => {
   console.log("userId", userId);
   try {
     const user_id = new mongoose.Types.ObjectId(userId);
-    const conversations = await ConversationModel.find({
-      user: user_id
-    })
-    return conversations;
+    const conversations = await ConversationModel.find({user: user_id})
+    return conversations.reverse();
   } catch (error) {
     if (error instanceof Error){
       throw new Error(error.message)

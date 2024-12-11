@@ -5,10 +5,21 @@ import authRouter from "./routes/auth.route";
 import chatRouter from "./routes/chat.route";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import initSocketServer from "./socket";
+import http from "http";
 
 
 dotenv.config()
 const app = express();
+
+
+// create http server
+export const httpServer = http.createServer(app);
+
+// create socket server
+const socketInstance = initSocketServer(httpServer);
+
+
 
 // connect to mongodb
 mongoose
@@ -33,6 +44,6 @@ app.use(cookieParser());
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 
-app.listen(3000, () => {
+httpServer.listen(3000, () => {
   console.log("Server is running on port 3000");
 });

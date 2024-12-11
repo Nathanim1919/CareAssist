@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import EmptyPage from "./emptyPage";
 import { ChatContext } from "../context/ChatContext";
 import ReactMarkdown from "react-markdown";
+import useSocket from "../hooks/useSocket";
 
 interface IChatProps {
   expandShrinkConversations: (value: boolean) => void;
@@ -89,7 +90,10 @@ const Chats: React.FC<IChatProps> = ({
     },
   ];
   const chat = useContext(ChatContext);
-  const { messages, setEmpty, empty, activeConversation } = chat!;
+  const { messages, empty, activeConversation } = chat!;
+  const {socket, connected} = useSocket();
+
+  console.log("Socket connected", connected);
 
   return (
     <div
@@ -119,17 +123,17 @@ const Chats: React.FC<IChatProps> = ({
               <div className="message flex flex-col gap-4 p-1">
                 {chat.role === "user" ? (
                   <div  className="text-gray-200 font-semibold bg-gray-800 md:max-w-[70%] p-2 px-6 rounded-full self-start text-[15px]">
-                    <p>
+                  
                       <ReactMarkdown>{chat.content}</ReactMarkdown>
-                    </p>
+                  
                   </div>
                 ) : (
                   <div className="md:max-w-[70%] overflow-auto p-2 px-6 rounded-3xl text-[15px]
                   self-end bg-gray-950 text-white
                   ">
-                    <p>
+                   
                     <ReactMarkdown>{chat.content}</ReactMarkdown>
-                    </p>
+                   
                   </div>
                 )}
               </div>
