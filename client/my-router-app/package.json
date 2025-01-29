@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "dev": "vite --port=3001",
-    "build": "vite build",
+    "dev": "node api.js && vite --port=3001",
+    "build": "node api.js && vite build",
     "serve": "vite preview",
-    "start": "vite"
+    "start": "node api.js && vite"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
