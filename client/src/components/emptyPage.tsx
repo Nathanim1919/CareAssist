@@ -19,10 +19,12 @@ const EmptyPage: React.FC = () => {
   return (
     <div className="relative h-full w-full grid place-items-center">
       <div className="grid gap-5">
-        <h1 className="md:text-3xl font-bold text-center">
-          {userData?.fullName},{" "}
-          <span className="text-gray-500">What Can I Do For You Today?</span>
-        </h1>
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="font-bold text-3xl">Hello, {userData?.fullName?.split(" ")[0]}.  {userData?.fullName?.split(" ")[1].slice(0,2)}</h1>
+          <h2 className="md:text-3xl font-bold text-center">
+            <span className="text-gray-500">What Can I Do For You Today?</span>
+          </h2>
+        </div>
         <form
           onSubmit={handleSubmit}
           className="bg-black flex items-center rounded-full p-2"
