@@ -1,10 +1,10 @@
 import { useContext, useState } from "react";
 import { ChatContext } from "../context/ChatContext";
-import { authContext } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
 const EmptyPage: React.FC = () => {
   const chat = useContext(ChatContext);
-  const auth = useContext(authContext);
+  const auth = useContext(AuthContext);
   const { userData } = auth!;
   const { sendMessage } = chat!;
   const [message, setMessage] = useState<string>("");

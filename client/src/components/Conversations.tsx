@@ -30,19 +30,23 @@ const Conversations: React.FC<IConversationProps> = ({
     setActiveConversation(null);
   }
 
+  useEffect(() => {
+    getAllConversations();
+  }, []);
+
 
   useEffect(() => {
     socket?.on("newConversation", (data: IConversation) => {
       conversations.unshift(data); // Add new conversation to the top of the list
       setActiveConversation(data);
       getActiveConversation(data._id);
+      getAllConversations();
     });
-    getAllConversations();
-
+    
     return () => {
       socket?.off("newConversation");
     };
-  }, [conversations, getActiveConversation, getAllConversations, setActiveConversation, socket]);
+  }, []);
   
   return (
     <div
@@ -60,6 +64,9 @@ const Conversations: React.FC<IConversationProps> = ({
         </div>
       </div>
       <div className="overflow-auto">
+        {conversations.length === 0 && (
+          <h3 className="text-center text-gray-400">No Conversations</h3>
+        )}
         {conversations.map((conversation, index) => (
           <div
             onClick={() => handleActiveConversation(conversation)}
