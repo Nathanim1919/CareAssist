@@ -1,16 +1,21 @@
 import mongoose, { Error } from "mongoose";
 import { ConversationModel } from "../model/conversation.model";
 import { generateContent, generateTitleForConversation } from "./llmService";
-import { io } from "../index";
+import { io, userSockets } from "../index";
 
 export const createConversation = async (userId: string) => {
   try {
+    const soketId = userSockets.get(userId);
+
     const conversation = await ConversationModel.create({
       user: userId,
       title: "new chat",
       messages: [],
     });
-    io.emit("newConversation", conversation);
+
+    if (soketId) {
+      io.to(soketId).emit("newConversation", conversation);
+    }
     return conversation;
   } catch (error) {
     if (error instanceof Error) {
@@ -60,7 +65,10 @@ export const createMessage = async (
   conversationId?: string
 ) => {
   try {
-    io.emit("aiIsTyping", true);
+    const soketId = userSockets.get(userId);
+    if (soketId) {
+      io.to(soketId).emit("aiIsTyping", true);
+    }
     // Find the conversation by ID or create a new one
     const conversation = conversationId
       ? await ConversationModel.findById(
@@ -72,17 +80,22 @@ export const createMessage = async (
     conversation?.messages.push({ content: message, role: "user" });
     const aiResponse = await generateContent(userId, message, conversationId);
     conversation?.messages.push({ content: aiResponse, role: "ai" });
-    io.emit("aiResponse", {
-      content: aiResponse,
-      role: "ai",
-    });
+
+    if (soketId) {
+      io.to(soketId).emit("aiResponse", {
+        content: aiResponse,
+        role: "ai",
+      });
+    }
+
     // generate title if title is empty
     if (conversation && conversation.title === "new chat") {
       if (conversation?.messages.length >= 3) {
         const title = await generateTitleForConversation(conversationId || "");
         conversation.title = title;
-        io.emit("title", title);
-        console.log("Generated title:", title);
+        if (soketId) {
+          io.to(soketId).emit("title", title);
+        }
       } else {
         console.log("Not enough context for generating a title.");
       }

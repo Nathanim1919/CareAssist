@@ -8,21 +8,14 @@ import dotenv from "dotenv";
 import initSocketServer from "./socket";
 import http from "http";
 
-
-dotenv.config()
+dotenv.config();
 const app = express();
-
 
 // create http server
 export const httpServer = http.createServer(app);
 
 // create socket server
-export const {
-  io,
-  userSockets,
-} = initSocketServer(httpServer);
-
-
+export const { io, userSockets } = initSocketServer(httpServer);
 
 // connect to mongodb
 mongoose

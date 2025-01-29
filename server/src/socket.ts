@@ -16,6 +16,8 @@ const initSocketServer = (httpServer: http.Server) => {
   io.on("connection", (socket: Socket) => {
     socket.on("register", (userId: string) => {
       userSockets.set(userId, socket.id);
+      console.log("User registered with id:", userId);
+      console.log("User sockets:", userSockets);
     });
 
     socket.on("error", (error) => {
