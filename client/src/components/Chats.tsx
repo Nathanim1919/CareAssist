@@ -48,7 +48,7 @@ const Chats: React.FC<IChatProps> = ({
 
   return (
     <div
-      className={`h-[90vh] overflow-hidden p-4 relative bg-gray-900
+      className={`h-[90vh] overflow-hidden p-4 relative bg-gray-800/60
        
     `}
     >
